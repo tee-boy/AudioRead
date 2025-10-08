@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const nav = () => {
   return (
- <nav className="flex justify-between items-center p-4 border-b">
+ <nav className="flex justify-between items- border-[#263537] border-w-90 p-4 border-b">
         <div className="flex items-center gap-3">
           <Image
           src="/AudioreadLogo.png" 
@@ -21,7 +21,7 @@ const nav = () => {
         </div>
 
         <button 
-        className="border px-4 py-1 rounded-md active:to-100% hover:bg-gray-100 transition">
+        className="rounded-md px-6 py-3 cursor-pointer backdrop-blur-md font-bold bg-[#2c383d] text-[#f4894c] hover:bg-[#263537] transition active:scale-95 active:shadow-sm">
         Sign Up
         </button>
       </nav>

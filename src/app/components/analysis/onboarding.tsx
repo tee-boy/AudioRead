@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useRef } from "react"
-import Header from "../nav"
-import toast from "react-hot-toast"
-import { useRouter } from "next/navigation"
+import { useEffect, useState, useRef } from "react";
+import Header from "../nav";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const Onboarding = () => {
   const [file, setFile] = useState<File | null>(null)
@@ -40,7 +40,7 @@ const Onboarding = () => {
           clearInterval(interval)
           toast.success("Analysis Complete ✅")
           setTimeout(() => {
-            router.push("/analyze") // navigate after complete
+            router.push("/readout") // navigate after analysis is complete
           }, 800)
         }
         i++
@@ -121,7 +121,7 @@ const Onboarding = () => {
           className="absolute inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md"
           onClick={() => fileInputRef.current?.click()}
         >
-          <p className="text-2xl font-semibold text-blue-600">
+          <p className="text-2xl font-semibold text-[#2c383d]">
             Drop your file here or click to upload
           </p>
         </div>
@@ -131,9 +131,9 @@ const Onboarding = () => {
       {progress !== null && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/50 backdrop-blur-md text-white">
           <h2 className="text-2xl font-semibold mb-4">Analyzing PDF...</h2>
-          <div className="w-2/3 max-w-md bg-gray-700 rounded-full h-4 overflow-hidden">
+          <div className="w-2/3 max-w-md bg-[#2c383d] rounded-full h-4 overflow-hidden">
             <div
-              className="bg-blue-500 h-4 transition-all duration-500"
+              className="bg-[#f4894c] h-4 transition-all duration-500"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
@@ -153,7 +153,7 @@ const Onboarding = () => {
         />
 
         <label
-          className="border rounded-md px-6 py-3 cursor-pointer hover:bg-gray-100 transition active:scale-95 active:shadow-sm"
+          className="rounded-md px-6 py-3 cursor-pointer backdrop-blur-md font-bold bg-[#2c383d] text-[#f4894c] hover:bg-[#263537] transition active:scale-95 active:shadow-sm"
           onClick={() => fileInputRef.current?.click()}
         >
           UPLOAD FILE
