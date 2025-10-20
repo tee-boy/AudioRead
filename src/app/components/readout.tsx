@@ -1,11 +1,28 @@
-import React from 'react'
+"use client";
+import { useState } from "react";
 
-const ReadOut = () => {
+export default function TextToSpeech() {
+  const [text, setText] = useState("");
+
+  const playAudio = async () => {
+    const res = await fetch("/api/speech", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, voice: "EXAVITQu4vr4xnSDxMaL" })
+    });
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    new Audio(url).play();
+  };
+
   return (
-    <div className='justify-center items-center text-center'>
-      Welcome to the Read Out Page
+    <div>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Enter text..."
+      />
+      <button onClick={playAudio}>Convert to Speech</button>
     </div>
-  )
+  );
 }
-
-export default ReadOut;
