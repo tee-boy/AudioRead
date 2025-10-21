@@ -27,26 +27,55 @@ const Onboarding = () => {
     return true
   }
 
-  // 🔹 Start analyzing (for PDFs only)
-  const startAnalyzing = (file: File) => {
-    if (file.type === "application/pdf") {
-      const steps = [0, 1, 3, 10, 40, 70, 90, 95, 100]
-      let i = 0
+// 🔹 Start analyzing (for all allowed types now)
+const startAnalyzing = (file: File) => {
+  if (allowedTypes.includes(file.type)) {
+    const steps = [0, 1, 3, 10, 40, 70, 90, 95, 100]
+    let i = 0
 
-      setProgress(0) // show overlay
-      const interval = setInterval(() => {
-        setProgress(steps[i])
-        if (steps[i] === 100) {
-          clearInterval(interval)
-          toast.success("Analysis Complete ✅")
-          setTimeout(() => {
-            router.push("/readout") // navigate after analysis is complete
-          }, 800)
-        }
-        i++
-      }, 700) // step timing
-    }
+    setProgress(0) // show overlay
+
+    // 🔸 Simulate text extraction (this will later handle actual reading)
+    extractFileContent(file)
+
+    const interval = setInterval(() => {
+      setProgress(steps[i])
+      if (steps[i] === 100) {
+        clearInterval(interval)
+        toast.success("Analysis Complete ✅")
+        setTimeout(() => {
+          router.push("/readout") // navigate after analysis is complete
+        }, 800)
+      }
+      i++
+    }, 700)
+  } else {
+    toast.error("Unsupported file type ❌")
   }
+}
+
+// 🔹 File text extraction (placeholder for now)
+const extractFileContent = async (file: File) => {
+  try {
+    let text = ""
+    if (file.type === "application/pdf") {
+      text = "📄 Extracted text from PDF file (simulated)"
+    } else if (file.type === "text/plain") {
+      const content = await file.text()
+      text = content.slice(0, 200) + "..."
+    } else if (
+      file.type === "application/msword" ||
+      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      text = "📘 Extracted text from Word document (simulated)"
+    }
+
+    console.log("Extracted Text Preview:", text)
+  } catch (error) {
+    console.error("Error extracting file content:", error)
+  }
+}
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -130,7 +159,7 @@ const Onboarding = () => {
       {/* 🔹 Analyzing overlay */}
       {progress !== null && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/50 backdrop-blur-md text-white">
-          <h2 className="text-2xl font-semibold mb-4">Analyzing PDF...</h2>
+          <h2 className="text-2xl font-semibold mb-4">Analyzing File...</h2>
           <div className="w-2/3 max-w-md bg-[#2c383d] rounded-full h-4 overflow-hidden">
             <div
               className="bg-[#f4894c] h-4 transition-all duration-500"
