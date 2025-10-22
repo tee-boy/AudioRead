@@ -9,8 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "eslint-plugin-react-hooks": "^7.0.0-canary-71b3a03c-20251021",
     "framer-motion": "^12.23.22",
+    "mammoth": "^1.11.0",
     "next": "15.5.3",
+    "pdfjs-dist": "^5.4.296",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.6.0"

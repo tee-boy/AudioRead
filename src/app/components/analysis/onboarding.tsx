@@ -4,6 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import Header from "../nav";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import mammoth from "mammoth"
+import * as pdfjsLib from "pdfjs-dist";
 
 const Onboarding = () => {
   const [file, setFile] = useState<File | null>(null)
@@ -27,24 +29,28 @@ const Onboarding = () => {
     return true
   }
 
-// 🔹 Start analyzing (for all allowed types now)
-const startAnalyzing = (file: File) => {
-  if (allowedTypes.includes(file.type)) {
-    const steps = [0, 1, 3, 10, 40, 70, 90, 95, 100]
-    let i = 0
+  // Start analyzing (for all allowed types now)
+  const startAnalyzing = (file: File) => {
+    if (allowedTypes.includes(file.type)) {
+      const steps = [0, 1, 3, 10, 40, 70, 90, 95, 100]
+      let i = 0;
 
     setProgress(0) // show overlay
 
-    // 🔸 Simulate text extraction (this will later handle actual reading)
+    // Simulate text extraction (this will later handle actual reading)
     extractFileContent(file)
 
+    // Required for pdf.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    
     const interval = setInterval(() => {
       setProgress(steps[i])
       if (steps[i] === 100) {
         clearInterval(interval)
         toast.success("Analysis Complete ✅")
         setTimeout(() => {
-          router.push("/readout") // navigate after analysis is complete
+          router.push("/readout") 
+        // navigate after analysis is complete
         }, 800)
       }
       i++
@@ -54,35 +60,65 @@ const startAnalyzing = (file: File) => {
   }
 }
 
-// 🔹 File text extraction (placeholder for now)
+
+// File text extraction (with localStorage support)
+// 🔹 File text extraction (with real text + safe PDF handling)
 const extractFileContent = async (file: File) => {
   try {
-    let text = ""
+    let text = "";
+
     if (file.type === "application/pdf") {
-      text = "📄 Extracted text from PDF file (simulated)"
-    } else if (file.type === "text/plain") {
-      const content = await file.text()
-      text = content.slice(0, 200) + "..."
-    } else if (
+      // ✅ Read real text from PDF
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = "";
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+
+        const strings = (content.items as any[])
+          .map((item) => ("str" in item ? item.str : ""))
+          .join(" ");
+
+        fullText += strings + "\n";
+      }
+
+      text = fullText.trim();
+    } 
+    else if (file.type === "text/plain") {
+      // ✅ Read simple text file directly
+      text = await file.text();
+    } 
+    else if (
       file.type === "application/msword" ||
       file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ) {
-      text = "📘 Extracted text from Word document (simulated)"
+      // ✅ Read Word document
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      text = result.value.trim();
     }
 
-    console.log("Extracted Text Preview:", text)
-  } catch (error) {
-    console.error("Error extracting file content:", error)
-  }
-}
+    // ✅ Save extracted text
+    if (!text) {
+      throw new Error("No readable text found in the uploaded file.");
+    }
 
+    console.log("✅ Extracted Text:", text.slice(0, 300) + "...");
+    localStorage.setItem("extractedText", text);
+  } 
+  catch (error) {
+    console.error("❌ Error extracting file content:", error);
+  }
+};
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       if (validateFile(e.target.files[0])) {
         setFile(e.target.files[0])
         toast.success(`File uploaded: ${e.target.files[0].name} ✅`)
-        startAnalyzing(e.target.files[0]) // 🔹 analysis here
+        startAnalyzing(e.target.files[0]) // analysis here
       }
     }
   }
@@ -95,7 +131,7 @@ const extractFileContent = async (file: File) => {
         if (validateFile(file)) {
           setFile(file)
           toast.success(`Pasted file: ${file.name} 📎`)
-          startAnalyzing(file) // 🔹 analysis here
+          startAnalyzing(file) // analysis here
         }
       }
     }
@@ -125,7 +161,7 @@ const extractFileContent = async (file: File) => {
       if (droppedFile && validateFile(droppedFile)) {
         setFile(droppedFile)
         toast.success(`Dropped file: ${droppedFile.name} 📂`)
-        startAnalyzing(droppedFile) // 🔹 analysis here
+        startAnalyzing(droppedFile) // analysis here
       }
     }
 
@@ -144,7 +180,7 @@ const extractFileContent = async (file: File) => {
     <div className="min-h-screen flex flex-col relative">
       <Header />
 
-      {/* 🔹 Fullscreen drag overlay */}
+      {/* Fullscreen drag overlay */}
       {isDragging && (
         <div
           className="absolute inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md"
@@ -156,7 +192,7 @@ const extractFileContent = async (file: File) => {
         </div>
       )}
 
-      {/* 🔹 Analyzing overlay */}
+      {/* Analyzing overlay */}
       {progress !== null && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/50 backdrop-blur-md text-white">
           <h2 className="text-2xl font-semibold mb-4">Analyzing File...</h2>
