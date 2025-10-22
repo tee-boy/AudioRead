@@ -95,13 +95,13 @@ const extractFileContent = async (file: File) => {
       file.type === "application/msword" ||
       file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ) {
-      // ✅ Read Word document
+      // Read Word document
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.extractRawText({ arrayBuffer });
       text = result.value.trim();
     }
 
-    // ✅ Save extracted text
+    // Save extracted text
     if (!text) {
       throw new Error("No readable text found in the uploaded file.");
     }
