@@ -74,15 +74,16 @@ const extractFileContent = async (file: File) => {
       let fullText = "";
 
       for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
 
-        const strings = (content.items as any[])
-          .map((item) => ("str" in item ? item.str : ""))
-          .join(" ");
+      const strings = (content.items as { str?: string }[])
+        .map((item) => item.str || "")
+        .join(" ");
 
-        fullText += strings + "\n";
-      }
+      fullText += strings + "\n";
+    }
+
 
       text = fullText.trim();
     } 
