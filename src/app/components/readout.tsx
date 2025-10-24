@@ -38,7 +38,7 @@ export default function ReadOut() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#1c1c1c] text-white">
-      <h1 className="text-2xl font-semibold mb-4">🔊 Ready to Read</h1>
+      <h1 className="text-2xl font-semibold mb-4">Ready to Read</h1>
       <p className="text-gray-400 mb-6 text-center max-w-md">
         Click below to listen to the extracted content from your uploaded file.
       </p>

@@ -62,7 +62,6 @@ const Onboarding = () => {
 
 
 // File text extraction (with localStorage support)
-// 🔹 File text extraction (with real text + safe PDF handling)
 const extractFileContent = async (file: File) => {
   try {
     let text = "";
@@ -72,7 +71,7 @@ const extractFileContent = async (file: File) => {
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       let fullText = "";
-
+ 
       for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
