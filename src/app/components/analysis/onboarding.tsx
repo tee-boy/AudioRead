@@ -138,7 +138,7 @@ const extractFileContent = async (file: File) => {
 
     window.addEventListener("paste", handlePaste)
     return () => window.removeEventListener("paste", handlePaste)
-  }, [])
+  })
 
   // Global Drag & Drop
   useEffect(() => {
@@ -174,7 +174,7 @@ const extractFileContent = async (file: File) => {
       window.removeEventListener("dragleave", handleDragLeave)
       window.removeEventListener("drop", handleDrop)
     }
-  }, [])
+  })
 
   return (
     <div className="min-h-screen flex flex-col relative">
